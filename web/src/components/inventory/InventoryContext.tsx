@@ -33,11 +33,12 @@ interface ButtonWithIndex extends Button {
   index: number;
 }
 
-interface GroupedButtons extends Array<Group> {}
+interface GroupedButtons extends Array<Group> { }
 
 const InventoryContext: React.FC = () => {
   const contextMenu = useAppSelector((state) => state.contextMenu);
   const item = contextMenu.item;
+  const inventoryType = contextMenu.inventoryType;
 
   const handleClick = (data: DataProps) => {
     if (!item) return;
@@ -51,6 +52,12 @@ const InventoryContext: React.FC = () => {
         break;
       case 'drop':
         isSlotWithItem(item) && onDrop({ item: item, inventory: 'player' });
+        break;
+      case 'buy':
+        const quantity = prompt('How many do you want to buy?', '1');
+        if (quantity && !isNaN(Number(quantity)) && Number(quantity) > 0) {
+          fetchNui('buyItem', { item: { name: item.name, slot: item.slot }, count: Number(quantity) });
+        }
         break;
       case 'remove':
         fetchNui('removeComponent', { component: data?.component, slot: data?.slot });
@@ -92,9 +99,15 @@ const InventoryContext: React.FC = () => {
   return (
     <>
       <Menu>
-        <MenuItem onClick={() => handleClick({ action: 'use' })} label={Locale.ui_use || 'Use'} />
-        <MenuItem onClick={() => handleClick({ action: 'give' })} label={Locale.ui_give || 'Give'} />
-        <MenuItem onClick={() => handleClick({ action: 'drop' })} label={Locale.ui_drop || 'Drop'} />
+        {inventoryType === 'shop' ? (
+          <MenuItem onClick={() => handleClick({ action: 'buy' })} label={'Buy'} />
+        ) : (
+          <>
+            <MenuItem onClick={() => handleClick({ action: 'use' })} label={Locale.ui_use || 'Use'} />
+            <MenuItem onClick={() => handleClick({ action: 'give' })} label={Locale.ui_give || 'Give'} />
+            <MenuItem onClick={() => handleClick({ action: 'drop' })} label={Locale.ui_drop || 'Drop'} />
+          </>
+        )}
         {item && item.metadata?.ammo > 0 && (
           <MenuItem onClick={() => handleClick({ action: 'removeAmmo' })} label={Locale.ui_remove_ammo} />
         )}
@@ -104,18 +117,7 @@ const InventoryContext: React.FC = () => {
             label={Locale.ui_copy}
           />
         )}
-        {item && item.metadata?.components && item.metadata?.components.length > 0 && (
-          <Menu label={Locale.ui_removeattachments}>
-            {item &&
-              item.metadata?.components.map((component: string, index: number) => (
-                <MenuItem
-                  key={index}
-                  onClick={() => handleClick({ action: 'remove', component, slot: item.slot })}
-                  label={Items[component]?.label || ''}
-                />
-              ))}
-          </Menu>
-        )}
+
         {((item && item.name && Items[item.name]?.buttons?.length) || 0) > 0 && (
           <>
             {item &&

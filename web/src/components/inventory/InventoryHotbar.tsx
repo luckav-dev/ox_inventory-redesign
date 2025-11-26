@@ -7,14 +7,28 @@ import { useAppSelector } from '../../store';
 import { selectLeftInventory } from '../../store/inventory';
 import { SlotWithItem } from '../../typings';
 import SlideUp from '../utils/transitions/SlideUp';
+import InventorySlot from './InventorySlot';
 
 const InventoryHotbar: React.FC = () => {
   const [hotbarVisible, setHotbarVisible] = useState(false);
-  const items = useAppSelector(selectLeftInventory).items.slice(0, 5);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const leftInventory = useAppSelector(selectLeftInventory);
+  const items = leftInventory.items.slice(0, 4);
 
-  //stupid fix for timeout
   const [handle, setHandle] = useState<NodeJS.Timeout>();
+
+  useNuiEvent('setInventoryVisible', (visible: boolean) => {
+    setInventoryOpen(visible);
+    if (visible) {
+      setHotbarVisible(true);
+      if (handle) clearTimeout(handle);
+    } else {
+      setHotbarVisible(false);
+    }
+  });
+
   useNuiEvent('toggleHotbar', () => {
+    if (inventoryOpen) return;
     if (hotbarVisible) {
       setHotbarVisible(false);
     } else {
@@ -25,51 +39,22 @@ const InventoryHotbar: React.FC = () => {
   });
 
   return (
-    <SlideUp in={hotbarVisible}>
-      <div className="hotbar-container">
-        {items.map((item) => (
-          <div
-            className="inventory-slot-wrapper"
-
-            {...(isSlotWithItem(item) && {
-              style: {
-                backgroundColor: 'rgba(213, 213, 213, 0.05)',
-                border: '1px solid rgba(163, 166, 168, 0.12)',
-                borderRadius: '.4167vw',
-              }
-            })}
-          >
-            <div
-              className="hotbar-item-slot"
-              style={{
-                backgroundImage: `url(${item?.name ? getItemUrl(item as SlotWithItem) : 'none'}`,
-                backgroundColor: 'rgba(213, 213, 213, 0.05)',
-                border: '1px solid rgba(163, 166, 168, 0.12)',
-                borderRadius: '.4167vw',
-              }}
+    <>
+      {hotbarVisible && (
+        <div className="hotbar-container">
+          {items.map((item) => (
+            <InventorySlot
               key={`hotbar-${item.slot}`}
-            >
-              {!isSlotWithItem(item) && (
-                <div className="item-slot-wrapper hotbar-slot-wrapper">
-                <div className="inventory-slot-number">{item.slot}</div>
-                  <div className="item-slot-info-wrapper hotbar-slot-info">
-                    {/* <p>{item.count ? item.count.toLocaleString('en-us') + `x` : ''}</p> */}
-                  </div>
-              </div>
-              )}
-              {isSlotWithItem(item) && (
-                <div className="item-slot-wrapper hotbar-slot-wrapper">
-                  <div className="inventory-slot-number">{item.slot}</div>
-                    <div className="item-slot-info-wrapper hotbar-slot-info">
-                      {/* <p>{item.count ? item.count.toLocaleString('en-us') + `x` : ''}</p> */}
-                    </div>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </SlideUp>
+              item={item}
+              inventoryId={leftInventory.id}
+              inventoryType={leftInventory.type}
+              inventoryGroups={leftInventory.groups}
+              hotbar={true}
+            />
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 

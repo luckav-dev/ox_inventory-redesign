@@ -1,3 +1,4 @@
+import React from 'react';
 import InventoryGrid from './InventoryGrid';
 import { useAppSelector } from '../../store';
 import { selectLeftInventory } from '../../store/inventory';
@@ -6,7 +7,7 @@ const LeftInventory: React.FC = () => {
   let leftInventory = useAppSelector(selectLeftInventory);
   let backpackInventory = useAppSelector(selectLeftInventory);
   // select only first 5 items
-  const newItems = leftInventory.items.slice(0, 5);
+  const newItems = leftInventory.items.slice(0, 4);
   leftInventory = {
     ...leftInventory,
     items: leftInventory.items.slice(0, 30),
@@ -29,10 +30,10 @@ const LeftInventory: React.FC = () => {
         gap: '3.8vh',
       }
     }>
-      <InventoryGrid inventory={{ ...leftInventory, items: newItems, label: 'hotbar' }}/>
+
       <InventoryGrid inventory={leftInventory} />
-     
-      
+
+
     </div>
   )
 };

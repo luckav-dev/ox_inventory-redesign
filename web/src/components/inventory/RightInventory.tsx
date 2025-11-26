@@ -1,3 +1,4 @@
+import React from 'react';
 import InventoryGrid from './InventoryGrid';
 import { useAppSelector } from '../../store';
 import { selectRightInventory } from '../../store/inventory';
@@ -17,14 +18,14 @@ const RightInventory: React.FC = () => {
   if (rightInventory.backpackDisabled) {
     backpackDisabled = true;
   }
-  trunkInventory = {...trunkInventory, label: "TRUNK"}
+  trunkInventory = { ...trunkInventory, label: "TRUNK" }
   if (trunkInventory) {
-    if(trunkInventory.type !== 'trunk' && trunkInventory.type !== 'glovebox') {
+    if (trunkInventory.type !== 'trunk' && trunkInventory.type !== 'glovebox') {
       inventoryDisabled = true;
     }
   }
-  
-  return(
+
+  return (
     <div style={
       {
         display: 'flex',

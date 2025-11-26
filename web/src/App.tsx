@@ -14,6 +14,36 @@ import KeyPress from './components/utils/KeyPress';
 
 debugData([
   {
+    action: 'init',
+    data: {
+      locale: {
+        ui_use: 'Use',
+        ui_give: 'Give',
+        ui_close: 'Close',
+        ui_matches: 'Matches',
+      },
+      items: {
+        iron: { name: 'iron', label: 'Iron', weight: 100, stack: true },
+        powersaw: { name: 'powersaw', label: 'Powersaw', weight: 5000, stack: false },
+        copper: { name: 'copper', label: 'Copper', weight: 50, stack: true },
+        water: { name: 'water', label: 'Water', weight: 500, stack: true },
+        backwoods: { name: 'backwoods', label: 'Backwoods', weight: 10, stack: true },
+        weapon_pistol: { name: 'weapon_pistol', label: 'Pistol', weight: 1000, stack: false },
+        lockpick: { name: 'lockpick', label: 'Lockpick', weight: 100, stack: true },
+      },
+      imagepath: 'images',
+      leftInventory: {
+        id: 'player-1',
+        type: 'player',
+        slots: 50,
+        label: 'Player',
+        weight: 0,
+        maxWeight: 50000,
+        items: [],
+      }
+    },
+  },
+  {
     action: 'setupInventory',
     data: {
       playerData: {
@@ -23,7 +53,7 @@ debugData([
         id: 'test',
         type: 'player',
         slots: 50,
-        label: 'Bob Smith',
+        label: 'Inventory',
         weight: 3000,
         maxWeight: 50000,
         backpackDisabled: false,
@@ -61,21 +91,24 @@ debugData([
               imageurl: 'https://i.imgur.com/2xHhTTz.png',
             },
           },
-          { slot: 7, name: 'weapon_pistol', weight: 10, count: 1, metadata: { durability: 75,
-            description: `name: Svetozar Miletic  \n Gender: Male`,
-            ammo: 3,
-            mustard: '60%',
-            ketchup: '30%',
-            mayo: '10%',
+          {
+            slot: 7, name: 'weapon_pistol', weight: 10, count: 1, metadata: {
+              durability: 75,
+              description: `name: Svetozar Miletic  \n Gender: Male`,
+              ammo: 3,
+              mustard: '60%',
+              ketchup: '30%',
+              mayo: '10%',
 
-           } },
+            }
+          },
         ],
       },
       rightInventory: {
         id: 'shop',
         type: 'shop',
         slots: 5000,
-        label: 'Bob Smith',
+        label: 'Shop',
         weight: 3000,
         maxWeight: 5000,
         items: [
@@ -95,8 +128,12 @@ debugData([
           },
         ],
       },
-      
+
     },
+  },
+  {
+    action: 'setInventoryVisible',
+    data: true,
   },
 ]);
 
@@ -132,7 +169,7 @@ const App: React.FC = () => {
   );
 };
 
-addEventListener("dragstart", function(event) {
+addEventListener("dragstart", function (event) {
   event.preventDefault()
 })
 

@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { useDrop } from 'react-dnd';
+import { DragSource } from '../../typings';
+import { isSlotWithItem } from '../../helpers';
+import { onDrop } from '../../dnd/onDrop';
 import useNuiEvent from '../../hooks/useNuiEvent';
 import InventoryControl from './InventoryControl';
 import InventoryHotbar from './InventoryHotbar';
@@ -25,6 +29,13 @@ const Inventory: React.FC = () => {
   const [inventoryVisible, setInventoryVisible] = useState(false);
   const dispatch = useAppDispatch();
   const [playerID, setPlayerID] = useState<number | null>(null);
+
+  const [, drop] = useDrop<DragSource, void, any>(() => ({
+    accept: 'SLOT',
+    drop: (item) => {
+      isSlotWithItem(item) && onDrop({ item, inventory: 'player' });
+    },
+  }));
   useNuiEvent<boolean>('setInventoryVisible', setInventoryVisible);
   useNuiEvent<false>('closeInventory', () => {
     setInventoryVisible(false);
@@ -41,11 +52,11 @@ const Inventory: React.FC = () => {
     dispatch(setupInventory(data));
     if (data.playerData) {
       const { playerID } = data.playerData;
-      setPlayerID(playerID);  
+      setPlayerID(playerID);
 
     }
     !inventoryVisible && setInventoryVisible(true);
-   
+
   });
 
   useNuiEvent('refreshSlots', (data) => dispatch(refreshSlots(data)));
@@ -59,7 +70,7 @@ const Inventory: React.FC = () => {
   return (
     <>
       <Fade in={inventoryVisible}>
-        <div className="inventory-wrapper" onClick={CloseTooltip}>
+        <div className="inventory-wrapper" onClick={CloseTooltip} ref={drop}>
           <LeftInventory />
           <InventoryControl />
           <RightInventory />
